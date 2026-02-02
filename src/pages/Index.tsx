@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect, useRef } from "react";
+import ChatSimulator from "@/components/ChatSimulator";
 
 const Index = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -191,7 +192,14 @@ const Index = () => {
 
       <section className="bg-card py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-16">Почему РАЗБЛОК, а не юрист?</h2>
+          <h2 className="text-4xl font-bold text-center mb-12">Попробуй прямо сейчас — бесплатно</h2>
+          <p className="text-center text-muted-foreground mb-10 text-lg max-w-2xl mx-auto">
+            Задай вопрос боту и получи мгновенный ответ. Это демо-версия с реальными сценариями.
+          </p>
+          
+          <ChatSimulator />
+
+          <h2 className="text-4xl font-bold text-center mb-16 mt-32">Почему РАЗБЛОК, а не юрист?</h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
