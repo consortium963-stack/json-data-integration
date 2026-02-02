@@ -1,14 +1,47 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useEffect, useRef } from "react";
 
 const Index = () => {
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      observerRef.current?.observe(el);
+    });
+
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-card shadow-sm">
         <div className="container mx-auto px-4 py-5 flex justify-between items-center">
           <div className="text-3xl font-bold text-primary tracking-tight">РАЗБЛОК</div>
-          <Button size="lg" className="bg-primary hover:bg-secondary text-white">
+          <Button 
+            size="lg" 
+            className="bg-primary hover:bg-secondary text-white"
+            onClick={() => scrollToSection('pricing')}
+          >
             Попробовать бесплатно
           </Button>
         </div>
@@ -16,123 +49,140 @@ const Index = () => {
 
       <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-          Разблокируйте счёт<br />
-          <span className="text-accent">быстрее на 70%</span>
+          Счет <span className="text-accent">заблокировали?</span><br />
+          Разберемся за 5 минут
         </h1>
         <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
-          AI-помощник готовит документы по 115-ФЗ за 15 минут вместо недели юристов
+          AI-помощник, который подскажет причину блокировки, поможет подготовить документы и вернет доступ к деньгам
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-secondary">
-            Начать разблокировку
+          <Button 
+            size="lg" 
+            className="text-lg px-8 py-6 bg-primary hover:bg-secondary"
+            onClick={() => scrollToSection('demo')}
+          >
+            Попробовать бесплатно
           </Button>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white">
-            Посмотреть демо
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="text-lg px-8 py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white"
+            onClick={() => scrollToSection('how-it-works')}
+          >
+            Как это работает
           </Button>
         </div>
       </section>
 
       <section className="bg-gradient-to-br from-red-50 to-orange-50 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Почему блокируют счета?</h2>
+          <h2 className="text-4xl font-bold text-center mb-12">Знакомая ситуация?</h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-all duration-300 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">⏱️</div>
-                <CardTitle>Долгий процесс</CardTitle>
+                <div className="text-5xl mb-4">😱</div>
+                <CardTitle>Паника и беспомощность</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Подготовка документов занимает 5-14 дней с привлечением юристов и бухгалтеров
+                  Банк заблокировал счет без объяснений. Не можешь снять деньги, оплатить покупки. "Усе пропало, шеф!"
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-all duration-300 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
                 <div className="text-5xl mb-4">💸</div>
-                <CardTitle>Дорого</CardTitle>
+                <CardTitle>Дорогие юристы</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Услуги юристов — от 50 000₽, внутренние ресурсы — простой бизнеса на миллионы
+                  Консультация — от 5 000 руб. Разблокировка — от 30 000 руб. А гарантий никаких.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-all duration-300 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">📋</div>
-                <CardTitle>Сложно</CardTitle>
+                <div className="text-5xl mb-4">⏰</div>
+                <CardTitle>Теряешь время и нервы</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Требуется собрать десятки документов, написать пояснения, разобраться в законах
+                  Запросы банка, жалобы в ЦБ, суды — недели ожидания. А деньги нужны сейчас.
                 </CardDescription>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="max-w-2xl mx-auto text-center bg-white shadow-xl">
+          <Card className="max-w-2xl mx-auto text-center bg-white shadow-xl animate-on-scroll opacity-0 translate-y-8">
             <CardContent className="pt-12 pb-12">
-              <div className="text-6xl font-bold text-accent mb-4">87%</div>
+              <div className="text-6xl font-bold text-accent mb-4">Более 2 млн граждан</div>
               <p className="text-lg text-muted-foreground">
-                компаний теряют время и деньги из-за блокировки счетов по 115-ФЗ
+                Столкнулись с блокировкой своих карт
               </p>
             </CardContent>
           </Card>
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-20">
+      <section id="how-it-works" className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-16">Как работает РАЗБЛОК</h2>
 
         <div className="space-y-16 max-w-4xl mx-auto">
-          <div className="flex gap-8 items-start">
+          <div className="flex gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
             <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
               1
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Расскажите о ситуации</h3>
+              <h3 className="text-2xl font-bold mb-4">Расскажи о проблеме</h3>
               <p className="text-lg text-muted-foreground mb-4">
-                Опишите причину блокировки в чате — AI задаст уточняющие вопросы
+                Напиши боту в Telegram: "Мой счет заблокировали". Он задаст несколько уточняющих вопросов и сразу определит тип блокировки.
               </p>
               <Card className="bg-muted/50">
                 <CardContent className="p-4 space-y-3">
                   <div className="bg-white p-3 rounded-lg">
                     <strong className="text-sm text-muted-foreground">Вы:</strong>
-                    <p className="mt-1">Банк заблокировал счёт из-за подозрительной операции</p>
+                    <p className="mt-1">Счет заблокировали, что делать?!</p>
                   </div>
                   <div className="bg-primary/10 p-3 rounded-lg border-l-4 border-primary">
-                    <strong className="text-sm text-primary">AI:</strong>
-                    <p className="mt-1">Какая была сумма операции? Есть ли договор с контрагентом?</p>
+                    <strong className="text-sm text-primary">РАЗБЛОК:</strong>
+                    <p className="mt-1">Понимаю, что сейчас паника. Сейчас разберемся! Скажи, что написано в уведомлении от банка? "115-ФЗ", "161-ФЗ" или "служба безопасности"?</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          <div className="flex gap-8 items-start flex-row-reverse">
+          <div className="flex gap-8 items-start flex-row-reverse animate-on-scroll opacity-0 translate-y-8">
             <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
               2
             </div>
             <div className="flex-1 text-right">
-              <h3 className="text-2xl font-bold mb-4">Загрузите документы</h3>
-              <p className="text-lg text-muted-foreground">
-                Прикрепите выписки, договоры, счета — AI сам найдёт нужные данные
+              <h3 className="text-2xl font-bold mb-4">Получи пошаговый план</h3>
+              <p className="text-lg text-muted-foreground mb-4">
+                Бот проанализирует твою ситуацию и объяснит причину блокировки простым языком. Узнаешь, какие документы нужны и куда их отправлять.
               </p>
+              <Card className="bg-muted/50">
+                <CardContent className="p-4">
+                  <div className="bg-primary/10 p-3 rounded-lg border-l-4 border-primary text-left">
+                    <strong className="text-sm text-primary">РАЗБЛОК:</strong>
+                    <p className="mt-1">Вижу проблему: у тебя "поступление → снятие, поступление → снятие". Банк думает, что счет транзитный. Нужно собрать 3 документа и написать пояснение. Покажу как 👇</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
-          <div className="flex gap-8 items-start">
+          <div className="flex gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
             <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
               3
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Получите готовые документы</h3>
+              <h3 className="text-2xl font-bold mb-4">Верни доступ к деньгам</h3>
               <p className="text-lg text-muted-foreground">
-                AI подготовит пояснения для банка, заявление и чек-лист по 115-ФЗ за 15 минут
+                Бот сгенерирует все нужные документы: письмо в банк, жалобу в ЦБ, чек-лист безопасности. Просто скачай, подпиши и отправь.
               </p>
             </div>
           </div>
@@ -141,89 +191,77 @@ const Index = () => {
 
       <section className="bg-card py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-16">Преимущества</h2>
+          <h2 className="text-4xl font-bold text-center mb-16">Почему РАЗБЛОК, а не юрист?</h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="Zap" size={48} className="text-primary" />
-                </div>
-                <CardTitle>Скорость</CardTitle>
+                <div className="text-5xl mb-4">⚡</div>
+                <CardTitle>Мгновенно</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  15 минут вместо 5-14 дней — AI работает быстрее команды юристов
+                  Ответ через 30 секунд, а не через неделю ожидания консультации
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="DollarSign" size={48} className="text-primary" />
-                </div>
-                <CardTitle>Экономия</CardTitle>
+                <div className="text-5xl mb-4">💰</div>
+                <CardTitle>В 30 раз дешевле</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  От 2990₽ вместо 50 000₽ на юристов — доступно даже малому бизнесу
+                  990 руб/мес вместо 30 000+ за разблокировку
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="CheckCircle" size={48} className="text-primary" />
-                </div>
-                <CardTitle>Точность</CardTitle>
+                <div className="text-5xl mb-4">🎯</div>
+                <CardTitle>Узкая специализация</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  AI обучен на актуальной базе 115-ФЗ и практике успешных разблокировок
+                  Только 115-ФЗ и блокировки счетов. Глубокая экспертиза в одной теме
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="Shield" size={48} className="text-primary" />
-                </div>
-                <CardTitle>Безопасность</CardTitle>
+                <div className="text-5xl mb-4">🤖</div>
+                <CardTitle>AI + юристы</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Данные защищены шифрованием, храним в РФ, соответствуем 152-ФЗ
+                  Бот дает мгновенный ответ, сложные случаи проверяет юрист-человек
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="Clock" size={48} className="text-primary" />
-                </div>
-                <CardTitle>24/7 доступ</CardTitle>
+                <div className="text-5xl mb-4">📱</div>
+                <CardTitle>Прямо в Telegram</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Работайте с документами когда удобно — AI не спит и не уходит на больничный
+                  Не нужно ничего устанавливать. Работает там, где ты уже общаешься
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
-                <div className="text-5xl mb-4">
-                  <Icon name="FileText" size={48} className="text-primary" />
-                </div>
-                <CardTitle>Готовые шаблоны</CardTitle>
+                <div className="text-5xl mb-4">🛡️</div>
+                <CardTitle>Профилактика</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Библиотека проверенных форматов документов для всех типов блокировок
+                  Проверка операций до блокировки. Предупредим о рисках заранее
                 </CardDescription>
               </CardContent>
             </Card>
@@ -235,17 +273,50 @@ const Index = () => {
         <h2 className="text-4xl font-bold text-center mb-16">Тарифы</h2>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <Card className="border-2 hover:shadow-lg transition-shadow">
+          <Card className="border-2 hover:shadow-lg transition-shadow animate-on-scroll opacity-0 translate-y-8">
             <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl mb-4">Базовый</CardTitle>
-              <div className="text-5xl font-bold text-primary mb-2">2 990₽</div>
-              <CardDescription>за один кейс</CardDescription>
+              <CardTitle className="text-2xl mb-4">Бесплатно</CardTitle>
+              <div className="text-5xl font-bold text-primary mb-2">0 ₽</div>
+              <CardDescription>&nbsp;</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>1 случай разблокировки</span>
+                  <span>Диагностика</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Общая информация о 115-ФЗ</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Определение типа блокировки</span>
+                </li>
+              </ul>
+              <Button 
+                className="w-full bg-primary hover:bg-secondary" 
+                onClick={() => scrollToSection('demo')}
+              >
+                Начать
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-4 border-primary shadow-xl scale-105 relative animate-on-scroll opacity-0 translate-y-8">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-white px-4 py-1 rounded-full text-sm font-bold">
+              Популярный
+            </div>
+            <CardHeader className="text-center pb-8">
+              <CardTitle className="text-2xl mb-4">Стандарт</CardTitle>
+              <div className="text-5xl font-bold text-primary mb-2">990 ₽</div>
+              <CardDescription>в месяц</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Неограниченные консультации</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
@@ -253,35 +324,53 @@ const Index = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Базовые шаблоны</span>
+                  <span>Письма в банк и ЦБ</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Email поддержка</span>
+                  <span>Мониторинг рисков</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Шаблоны договоров</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Проверка операций</span>
                 </li>
               </ul>
-              <Button className="w-full" variant="outline">Выбрать</Button>
+              <Button 
+                className="w-full bg-primary hover:bg-secondary"
+                onClick={() => scrollToSection('demo')}
+              >
+                Попробовать
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-4 border-primary shadow-xl scale-105 relative">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-white px-4 py-1 rounded-full text-sm font-bold">
-              Популярный
-            </div>
+          <Card className="border-2 hover:shadow-lg transition-shadow animate-on-scroll opacity-0 translate-y-8">
             <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl mb-4">Профессиональный</CardTitle>
-              <div className="text-5xl font-bold text-primary mb-2">9 990₽</div>
+              <CardTitle className="text-2xl mb-4">Премиум</CardTitle>
+              <div className="text-5xl font-bold text-primary mb-2">2 990 ₽</div>
               <CardDescription>в месяц</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>До 5 кейсов в месяц</span>
+                  <span>Все из "Стандарт"</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Все возможности базового</span>
+                  <span>Проверка юристом-человеком</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Сопровождение в ЦБ</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
+                  <span>Помощь с судом</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
@@ -289,44 +378,7 @@ const Index = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Консультация юриста 1 час</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>История документов</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-primary hover:bg-secondary">Выбрать</Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl mb-4">Бизнес</CardTitle>
-              <div className="text-5xl font-bold text-primary mb-2">29 990₽</div>
-              <CardDescription>в месяц</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Безлимитные кейсы</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Все возможности Pro</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
                   <span>Личный менеджер</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>Юридическое сопровождение</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size={20} />
-                  <span>API интеграция</span>
                 </li>
               </ul>
               <Button className="w-full" variant="outline">Связаться</Button>
@@ -335,21 +387,28 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="bg-gradient-to-r from-primary to-secondary py-20 text-white">
+      <section id="demo" className="bg-gradient-to-r from-primary to-secondary py-20 text-white scroll-mt-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Разблокируйте счёт уже сегодня</h2>
+          <h2 className="text-4xl font-bold mb-6">Попробуй прямо сейчас — бесплатно</h2>
           <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto">
-            Присоединяйтесь к 2000+ компаниям, которые решают проблемы с 115-ФЗ за минуты
+            Диагностика бесплатно! Без карты, без регистрации.
           </p>
-          <Button size="lg" className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6">
-            Начать бесплатно
+          <Button 
+            size="lg" 
+            className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-6"
+            asChild
+          >
+            <a href="https://t.me/razblok_bot" target="_blank" rel="noopener noreferrer">
+              Открыть в Telegram →
+            </a>
           </Button>
         </div>
       </section>
 
       <footer className="bg-foreground text-white py-10">
         <div className="container mx-auto px-4 text-center">
-          <p className="opacity-80">© 2024 РАЗБЛОК. Все права защищены.</p>
+          <p className="opacity-80">© 2026 РАЗБЛОК. AI-помощник по разблокировке счетов</p>
+          <p className="opacity-70 mt-2 text-sm">От создателя "Заметки Банкира" — Юлии Левицкой</p>
         </div>
       </footer>
     </div>
