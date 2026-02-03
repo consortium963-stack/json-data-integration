@@ -36,30 +36,31 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-5 flex justify-between items-center">
-          <div className="text-3xl font-bold text-primary tracking-tight">РАЗБЛОК</div>
+        <div className="container mx-auto px-4 py-3 md:py-5 flex justify-between items-center">
+          <div className="text-2xl md:text-3xl font-bold text-primary tracking-tight">РАЗБЛОК</div>
           <Button 
-            size="lg" 
-            className="bg-primary hover:bg-secondary text-white"
+            size="sm"
+            className="bg-primary hover:bg-secondary text-white text-xs md:text-base md:px-6"
             onClick={() => scrollToSection('pricing')}
           >
-            Попробовать бесплатно
+            <span className="hidden sm:inline">Попробовать бесплатно</span>
+            <span className="sm:hidden">Попробовать</span>
           </Button>
         </div>
       </header>
 
-      <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+      <section className="container mx-auto px-4 py-12 md:py-20 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
           Счет <span className="text-accent">заблокировали?</span><br />
           Разберемся за 5 минут
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-3xl mx-auto">
           AI-помощник, который подскажет причину блокировки, поможет подготовить документы и вернет доступ к деньгам
         </p>
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center px-4">
           <Button 
             size="lg" 
-            className="text-lg px-8 py-6 bg-primary hover:bg-secondary"
+            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-primary hover:bg-secondary w-full sm:w-auto"
             onClick={() => scrollToSection('demo')}
           >
             Попробовать бесплатно
@@ -67,7 +68,7 @@ const Index = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="text-lg px-8 py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white"
+            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white w-full sm:w-auto"
             onClick={() => scrollToSection('how-it-works')}
           >
             Как это работает
@@ -75,9 +76,9 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="bg-gradient-to-br from-red-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-red-50 to-orange-50 py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Знакомая ситуация?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Знакомая ситуация?</h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <Card className="hover:shadow-lg transition-all duration-300 animate-on-scroll opacity-0 translate-y-8">
@@ -118,9 +119,9 @@ const Index = () => {
           </div>
 
           <Card className="max-w-2xl mx-auto text-center bg-white shadow-xl animate-on-scroll opacity-0 translate-y-8">
-            <CardContent className="pt-12 pb-12">
-              <div className="text-6xl font-bold text-accent mb-4">Более 2 млн граждан</div>
-              <p className="text-lg text-muted-foreground">
+            <CardContent className="pt-8 pb-8 md:pt-12 md:pb-12">
+              <div className="text-4xl md:text-6xl font-bold text-accent mb-3 md:mb-4">Более 2 млн граждан</div>
+              <p className="text-base md:text-lg text-muted-foreground">
                 Столкнулись с блокировкой своих карт
               </p>
             </CardContent>
@@ -128,12 +129,12 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="how-it-works" className="container mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-center mb-16">Как работает РАЗБЛОК</h2>
+      <section id="how-it-works" className="container mx-auto px-4 py-12 md:py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16">Как работает РАЗБЛОК</h2>
 
-        <div className="space-y-16 max-w-4xl mx-auto">
-          <div className="flex gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
-            <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
+        <div className="space-y-10 md:space-y-16 max-w-4xl mx-auto">
+          <div className="flex gap-4 md:gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
+            <div className="flex-shrink-0 w-14 h-14 md:w-20 md:h-20 bg-primary text-white rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold">
               1
             </div>
             <div className="flex-1">
@@ -156,11 +157,11 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex gap-8 items-start flex-row-reverse animate-on-scroll opacity-0 translate-y-8">
-            <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
+          <div className="flex gap-4 md:gap-8 items-start flex-row-reverse animate-on-scroll opacity-0 translate-y-8">
+            <div className="flex-shrink-0 w-14 h-14 md:w-20 md:h-20 bg-primary text-white rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold">
               2
             </div>
-            <div className="flex-1 text-right">
+            <div className="flex-1 md:text-right">
               <h3 className="text-2xl font-bold mb-4">Получи пошаговый план</h3>
               <p className="text-lg text-muted-foreground mb-4">
                 Бот проанализирует твою ситуацию и объяснит причину блокировки простым языком. Узнаешь, какие документы нужны и куда их отправлять.
@@ -176,8 +177,8 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
-            <div className="flex-shrink-0 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-bold">
+          <div className="flex gap-4 md:gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
+            <div className="flex-shrink-0 w-14 h-14 md:w-20 md:h-20 bg-primary text-white rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold">
               3
             </div>
             <div className="flex-1">
@@ -199,7 +200,7 @@ const Index = () => {
           
           <ChatSimulator />
 
-          <h2 className="text-4xl font-bold text-center mb-16 mt-32">Почему РАЗБЛОК, а не юрист?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16 mt-16 md:mt-32">Почему РАЗБЛОК, а не юрист?</h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="border-2 hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1 animate-on-scroll opacity-0 translate-y-8">
@@ -311,7 +312,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-4 border-primary shadow-xl scale-105 relative animate-on-scroll opacity-0 translate-y-8">
+          <Card className="border-4 border-primary shadow-xl md:scale-105 relative animate-on-scroll opacity-0 translate-y-8">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-white px-4 py-1 rounded-full text-sm font-bold">
               Популярный
             </div>

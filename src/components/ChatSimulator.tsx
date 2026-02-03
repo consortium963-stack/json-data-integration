@@ -191,17 +191,17 @@ const ChatSimulator = () => {
   return (
     <Card className="max-w-2xl mx-auto shadow-2xl">
       <CardContent className="p-0">
-        <div className="bg-primary text-white p-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-            <Icon name="Bot" className="text-primary" size={24} />
+        <div className="bg-primary text-white p-3 md:p-4 flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
+            <Icon name="Bot" className="text-primary" size={20} />
           </div>
           <div>
-            <div className="font-bold">РАЗБЛОК</div>
+            <div className="font-bold text-sm md:text-base">РАЗБЛОК</div>
             <div className="text-xs opacity-80">AI-помощник • онлайн</div>
           </div>
         </div>
 
-        <div className="h-[400px] overflow-y-auto p-4 bg-muted/20 space-y-3">
+        <div className="h-[400px] md:h-[400px] overflow-y-auto p-3 md:p-4 bg-muted/20 space-y-3">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -233,13 +233,13 @@ const ChatSimulator = () => {
         </div>
 
         {currentOptions && !isTyping && (
-          <div className="p-4 border-t bg-white space-y-2">
+          <div className="p-3 md:p-4 border-t bg-white space-y-2">
             {currentOptions.map((option, index) => (
               <Button
                 key={index}
                 onClick={() => handleOptionClick(option)}
                 variant={option === 'Открыть в Telegram' ? 'default' : 'outline'}
-                className={`w-full justify-start ${
+                className={`w-full justify-start text-sm md:text-base ${
                   option === 'Открыть в Telegram' 
                     ? 'bg-primary hover:bg-secondary' 
                     : ''
