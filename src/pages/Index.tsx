@@ -40,7 +40,7 @@ const Index = () => {
           <div className="text-2xl md:text-3xl font-bold text-primary tracking-tight">РАЗБЛОК</div>
           <Button 
             size="sm"
-            className="bg-primary hover:bg-secondary text-white text-xs md:text-base md:px-6"
+            className="bg-primary hover:bg-secondary text-white text-xs md:text-base md:px-6 shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
             onClick={() => scrollToSection('pricing')}
           >
             <span className="hidden sm:inline">Попробовать бесплатно</span>
@@ -60,7 +60,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center px-4">
           <Button 
             size="lg" 
-            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-primary hover:bg-secondary w-full sm:w-auto"
+            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-primary hover:bg-secondary w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
             onClick={() => scrollToSection('demo')}
           >
             Попробовать бесплатно
