@@ -25,6 +25,11 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
     consent: false,
   });
 
+  const isFormValid = formData.name.trim() !== '' && 
+                      formData.email.trim() !== '' && 
+                      formData.phone.trim() !== '' && 
+                      formData.consent;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.consent) {
@@ -95,7 +100,12 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
               Я согласен на обработку персональных данных в соответствии с Федеральным законом №152-ФЗ «О персональных данных»
             </Label>
           </div>
-          <Button type="submit" className="w-full" size="lg">
+          <Button 
+            type="submit" 
+            className="w-full" 
+            size="lg"
+            disabled={!isFormValid}
+          >
             <Icon name="Send" size={20} className="mr-2" />
             Перейти в Telegram
           </Button>
