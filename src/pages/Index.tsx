@@ -81,7 +81,7 @@ const Index = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Знакомая ситуация?</h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="hover:shadow-xl transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
+            <Card className="hover:shadow-xl hover:-translate-y-2 transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
                 <div className="text-5xl mb-4">😱</div>
                 <CardTitle>Паника и беспомощность</CardTitle>
@@ -93,7 +93,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-xl transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
+            <Card className="hover:shadow-xl hover:-translate-y-2 transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
                 <div className="text-5xl mb-4">💸</div>
                 <CardTitle>Дорогие юристы</CardTitle>
@@ -105,7 +105,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-xl transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
+            <Card className="hover:shadow-xl hover:-translate-y-2 transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
               <CardHeader>
                 <div className="text-5xl mb-4">⏰</div>
                 <CardTitle>Теряешь время и нервы</CardTitle>
