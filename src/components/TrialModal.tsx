@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import Icon from '@/components/ui/icon';
 
 interface TrialModalProps {
   open: boolean;
@@ -31,7 +32,7 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
       return;
     }
     console.log('Form submitted:', formData);
-    alert('Спасибо! Мы свяжемся с вами в ближайшее время.');
+    window.open('https://t.me/razblok_bot', '_blank');
     onOpenChange(false);
     setFormData({ name: '', email: '', phone: '', consent: false });
   };
@@ -95,7 +96,8 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
             </Label>
           </div>
           <Button type="submit" className="w-full" size="lg">
-            Отправить заявку
+            <Icon name="Send" size={20} className="mr-2" />
+            Перейти в Telegram
           </Button>
         </form>
       </DialogContent>
