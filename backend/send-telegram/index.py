@@ -15,7 +15,8 @@ def handler(event: dict, context) -> dict:
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type'
             },
-            'body': ''
+            'body': '',
+            'isBase64Encoded': False
         }
 
     if method != 'POST':
@@ -25,7 +26,8 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': 'Method not allowed'})
+            'body': json.dumps({'error': 'Method not allowed'}),
+            'isBase64Encoded': False
         }
 
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
@@ -38,7 +40,8 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': 'Telegram credentials not configured'})
+            'body': json.dumps({'error': 'Telegram credentials not configured'}),
+            'isBase64Encoded': False
         }
 
     try:
@@ -66,7 +69,8 @@ def handler(event: dict, context) -> dict:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'success': True, 'message': 'Заявка успешно отправлена'})
+                'body': json.dumps({'success': True, 'message': 'Заявка успешно отправлена'}),
+                'isBase64Encoded': False
             }
         else:
             return {
@@ -75,7 +79,8 @@ def handler(event: dict, context) -> dict:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': f'Telegram API error: {result}'})
+                'body': json.dumps({'error': f'Telegram API error: {result}'}),
+                'isBase64Encoded': False
             }
 
     except urllib.error.HTTPError as e:
@@ -86,7 +91,8 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': f'HTTP Error {e.code}: {error_body}'})
+            'body': json.dumps({'error': f'HTTP Error {e.code}: {error_body}'}),
+            'isBase64Encoded': False
         }
     except Exception as e:
         return {
@@ -95,5 +101,6 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({'error': str(e)}),
+            'isBase64Encoded': False
         }
