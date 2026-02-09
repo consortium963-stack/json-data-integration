@@ -351,7 +351,7 @@ const Index = () => {
                 </li>
               </ul>
               <Button 
-                className="w-full bg-primary hover:bg-secondary"
+                className="w-full bg-secondary hover:bg-primary shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
                 onClick={() => scrollToSection('demo')}
               >
                 Попробовать
