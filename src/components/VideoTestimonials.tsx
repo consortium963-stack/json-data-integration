@@ -1,39 +1,40 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
+
+const API_URL = "https://functions.poehali.dev/9216eabe-3fb0-416a-b1f3-1cd5d47cb524";
 
 interface VideoTestimonial {
   id: number;
-  clientName: string;
+  client_name?: string;
+  clientName?: string;
   description: string;
-  videoUrl: string;
-  videoType: 'upload' | 'youtube' | 'link';
+  video_url?: string;
+  videoUrl?: string;
+  video_type?: 'upload' | 'youtube' | 'link';
+  videoType?: 'upload' | 'youtube' | 'link';
+  sort_order?: number;
 }
 
 const VideoTestimonials = () => {
-  const [videos, setVideos] = useState<VideoTestimonial[]>([
-    {
-      id: 1,
-      clientName: "Клиент 1",
-      description: "Разблокировка за 3 дня",
-      videoUrl: "",
-      videoType: 'upload'
-    },
-    {
-      id: 2,
-      clientName: "Клиент 2",
-      description: "Разблокировка за 5 дней",
-      videoUrl: "",
-      videoType: 'upload'
-    },
-    {
-      id: 3,
-      clientName: "Клиент 3",
-      description: "Разблокировка за 2 дня",
-      videoUrl: "",
-      videoType: 'upload'
+  const [videos, setVideos] = useState<VideoTestimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadVideos();
+  }, []);
+
+  const loadVideos = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setVideos(data);
+    } catch (error) {
+      console.error('Failed to load videos:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -55,35 +56,58 @@ const VideoTestimonials = () => {
   const handleEdit = (video: VideoTestimonial) => {
     setEditingId(video.id);
     setEditForm({
-      clientName: video.clientName,
+      clientName: video.client_name || video.clientName || '',
       description: video.description,
-      videoUrl: video.videoUrl,
-      videoType: video.videoType
+      videoUrl: video.video_url || video.videoUrl || '',
+      videoType: (video.video_type || video.videoType || 'upload') as 'upload' | 'youtube' | 'link'
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editingId) {
-      setVideos(videos.map(v => 
-        v.id === editingId 
-          ? { ...v, ...editForm }
-          : v
-      ));
-      setEditingId(null);
+      try {
+        const response = await fetch(API_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: editingId,
+            clientName: editForm.clientName,
+            description: editForm.description,
+            videoUrl: editForm.videoUrl,
+            videoType: editForm.videoType
+          })
+        });
+        
+        if (response.ok) {
+          await loadVideos();
+          setEditingId(null);
+        }
+      } catch (error) {
+        console.error('Failed to save video:', error);
+      }
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setVideos(videos.map(v => 
-        v.id === id 
-          ? { ...v, videoUrl: url, videoType: 'upload' as const }
-          : v
-      ));
+      setEditForm({ ...editForm, videoUrl: url, videoType: 'upload' });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto animate-on-scroll opacity-0 translate-y-8">
+        <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12">Видео отзывы наших клиентов</h2>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto animate-on-scroll opacity-0 translate-y-8">
@@ -147,7 +171,7 @@ const VideoTestimonials = () => {
                           <input
                             type="file"
                             accept="video/*"
-                            onChange={(e) => handleFileUpload(e, video.id)}
+                            onChange={handleFileUpload}
                             className="w-full text-xs"
                           />
                         </div>
@@ -174,17 +198,17 @@ const VideoTestimonials = () => {
                       </button>
                     </div>
                   </div>
-                ) : video.videoUrl ? (
-                  video.videoType === 'youtube' ? (
+                ) : (video.video_url || video.videoUrl) ? (
+                  (video.video_type || video.videoType) === 'youtube' ? (
                     <iframe
-                      src={getYouTubeEmbedUrl(video.videoUrl)}
+                      src={getYouTubeEmbedUrl(video.video_url || video.videoUrl || '')}
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
                   ) : (
                     <video
-                      src={video.videoUrl}
+                      src={video.video_url || video.videoUrl}
                       controls
                       className="w-full h-full object-cover"
                     />
@@ -206,10 +230,10 @@ const VideoTestimonials = () => {
               </div>
               
               <div className="p-4 relative">
-                <p className="text-sm font-semibold">{video.clientName}</p>
+                <p className="text-sm font-semibold">{video.client_name || video.clientName}</p>
                 <p className="text-xs text-muted-foreground mt-1">{video.description}</p>
                 
-                {editMode && video.videoUrl && (
+                {editMode && (video.video_url || video.videoUrl) && (
                   <button
                     onClick={() => handleEdit(video)}
                     className="absolute top-2 right-2 text-primary hover:text-primary/80"

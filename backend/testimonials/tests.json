@@ -1,0 +1,23 @@
+{
+  "tests": [
+    {
+      "name": "Get all testimonials",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Create new testimonial",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "clientName": "Test Client",
+        "description": "Test description",
+        "videoUrl": "https://youtube.com/test",
+        "videoType": "youtube",
+        "sortOrder": 1
+      },
+      "expectedStatus": 201
+    }
+  ]
+}
