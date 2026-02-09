@@ -52,17 +52,17 @@ const Index = () => {
       </header>
 
       <section className="container mx-auto px-4 py-12 md:py-20 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-6 leading-tight">
           Счет <span className="text-accent">заблокировали?</span><br />
           Разблок поможет!
         </h1>
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-3xl mx-auto">
+        <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-10 max-w-3xl mx-auto">
           AI-помощник + юристы уже помогли разблокировать 210+ счетов по 115-ФЗ в 2025 году
         </p>
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center px-4">
           <Button 
             size="lg" 
-            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-primary hover:bg-secondary w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
+            className="text-sm md:text-lg px-5 md:px-8 py-4 md:py-6 bg-primary hover:bg-secondary w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
             onClick={() => setIsModalOpen(true)}
           >
             Попробовать бесплатно
@@ -70,7 +70,7 @@ const Index = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white w-full sm:w-auto"
+            className="text-sm md:text-lg px-5 md:px-8 py-4 md:py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white w-full sm:w-auto"
             onClick={() => scrollToSection('how-it-works')}
           >
             Как это работает
@@ -80,7 +80,7 @@ const Index = () => {
 
       <section className="bg-gradient-to-br from-red-50 to-orange-50 py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Знакомая ситуация?</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-center mb-6 md:mb-12">Знакомая ситуация?</h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <Card className="hover:shadow-xl hover:-translate-y-2 transition-all duration-300 shadow-lg animate-on-scroll opacity-0 translate-y-8">
@@ -89,7 +89,7 @@ const Index = () => {
                 <CardTitle>Паника и беспомощность</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Банк заблокировал счет без объяснений. Не можешь снять деньги, оплатить покупки. "Усе пропало, шеф!"
                 </CardDescription>
               </CardContent>
@@ -101,7 +101,7 @@ const Index = () => {
                 <CardTitle>Дорогие юристы</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Консультация — от 5 000 руб. Разблокировка — от 30 000 руб. А гарантий никаких.
                 </CardDescription>
               </CardContent>
@@ -113,7 +113,7 @@ const Index = () => {
                 <CardTitle>Теряешь время и нервы</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Запросы банка, жалобы в ЦБ, суды — недели ожидания. А деньги нужны сейчас.
                 </CardDescription>
               </CardContent>
@@ -122,8 +122,8 @@ const Index = () => {
 
           <Card className="max-w-2xl mx-auto text-center bg-white shadow-xl animate-on-scroll opacity-0 translate-y-8">
             <CardContent className="pt-8 pb-8 md:pt-12 md:pb-12">
-              <div className="text-4xl md:text-6xl font-bold text-accent mb-3 md:mb-4">Более 2 млн граждан</div>
-              <p className="text-base md:text-lg text-muted-foreground">
+              <div className="text-3xl md:text-6xl font-bold text-accent mb-2 md:mb-4">Более 2 млн граждан</div>
+              <p className="text-sm md:text-lg text-muted-foreground">
                 Столкнулись с блокировкой своих карт
               </p>
             </CardContent>
@@ -132,7 +132,7 @@ const Index = () => {
       </section>
 
       <section id="how-it-works" className="container mx-auto px-4 py-12 md:py-20">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16">Как работает РАЗБЛОК</h2>
+        <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16">Как работает РАЗБЛОК</h2>
 
         <div className="space-y-10 md:space-y-16 max-w-4xl mx-auto">
           <div className="flex gap-4 md:gap-8 items-start animate-on-scroll opacity-0 translate-y-8">
@@ -140,8 +140,8 @@ const Index = () => {
               1
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Расскажи о проблеме</h3>
-              <p className="text-lg text-muted-foreground mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Расскажи о проблеме</h3>
+              <p className="text-base md:text-lg text-muted-foreground mb-3 md:mb-4">
                 Напиши боту в Telegram: "Мой счет заблокировали". Он задаст несколько уточняющих вопросов и сразу определит тип блокировки.
               </p>
               <Card className="bg-muted/50">
@@ -164,8 +164,8 @@ const Index = () => {
               2
             </div>
             <div className="flex-1 md:text-right">
-              <h3 className="text-2xl font-bold mb-4">Получи пошаговый план</h3>
-              <p className="text-lg text-muted-foreground mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Получи пошаговый план</h3>
+              <p className="text-base md:text-lg text-muted-foreground mb-3 md:mb-4">
                 Бот проанализирует твою ситуацию и объяснит причину блокировки простым языком. Узнаешь, какие документы нужны и куда их отправлять.
               </p>
               <Card className="bg-muted/50">
@@ -184,8 +184,8 @@ const Index = () => {
               3
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Верни доступ к деньгам</h3>
-              <p className="text-lg text-muted-foreground">
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Верни доступ к деньгам</h3>
+              <p className="text-base md:text-lg text-muted-foreground">
                 Бот сгенерирует все нужные документы: письмо в банк, жалобу в ЦБ, чек-лист безопасности. Просто скачай, подпиши и отправь.
               </p>
             </div>
@@ -211,7 +211,7 @@ const Index = () => {
                 <CardTitle>Ответ за 30 секунд</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Не 2 недели ожидания консультации юриста — получи план действий прямо сейчас
                 </CardDescription>
               </CardContent>
@@ -223,7 +223,7 @@ const Index = () => {
                 <CardTitle>990 ₽/мес вместо 35 000 ₽</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Цена юриста за разблокировку — от 35 000 ₽. У нас — подписка 990 ₽/мес с неограниченными консультациями
                 </CardDescription>
               </CardContent>
@@ -235,7 +235,7 @@ const Index = () => {
                 <CardTitle>190+ счетов разблокировано</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Только 115-ФЗ и блокировки — узкая специализация с доказанной эффективностью в 2025 году
                 </CardDescription>
               </CardContent>
@@ -247,7 +247,7 @@ const Index = () => {
                 <CardTitle>ИИ + проверка юристом</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Искусственный интеллект анализирует ситуацию за секунды, юрист проверяет сложные кейсы вручную
                 </CardDescription>
               </CardContent>
@@ -259,7 +259,7 @@ const Index = () => {
                 <CardTitle>Прямо в Telegram</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Не нужно ничего устанавливать. Работает там, где ты уже общаешься
                 </CardDescription>
               </CardContent>
@@ -271,7 +271,7 @@ const Index = () => {
                 <CardTitle>Профилактика</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm md:text-base">
                   Проверка операций до блокировки. Предупредим о рисках заранее
                 </CardDescription>
               </CardContent>
