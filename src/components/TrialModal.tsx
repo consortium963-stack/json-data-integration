@@ -114,7 +114,7 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
                       formData.consent &&
                       nameError === '';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateFullName(formData.name)) {
@@ -125,11 +125,32 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
       alert('Необходимо согласие на обработку персональных данных');
       return;
     }
-    console.log('Form submitted:', formData);
-    window.open('https://t.me/razblok_bot', '_blank');
-    onOpenChange(false);
-    setFormData({ name: '', email: '', phone: '', consent: false });
-    setNameError('');
+    
+    try {
+      const response = await fetch('https://functions.poehali.dev/dce04ff2-c355-491c-ba7b-d7d24cce51b7', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        })
+      });
+
+      if (response.ok) {
+        window.open('https://t.me/Bot_RazblokBot', '_blank');
+        onOpenChange(false);
+        setFormData({ name: '', email: '', phone: '', consent: false });
+        setNameError('');
+      } else {
+        alert('Ошибка отправки заявки. Попробуйте позже.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Ошибка отправки заявки. Попробуйте позже.');
+    }
   };
 
   return (
