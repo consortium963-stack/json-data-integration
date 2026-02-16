@@ -394,9 +394,9 @@ const Index = () => {
 
       <section id="demo" className="bg-gradient-to-r from-primary to-secondary py-20 text-white scroll-mt-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Попробуй прямо сейчас — бесплатно</h2>
+          <h2 className="text-4xl font-bold mb-6">Начни разблокировку прямо сейчас</h2>
           <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto">
-            Диагностика бесплатно! Без карты, без регистрации.
+            Бесплатная диагностика! Без карты, без регистрации.
           </p>
           <Button 
             size="lg" 
