@@ -25,6 +25,7 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
     consent: false,
   });
   const [nameError, setNameError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validateFullName = (name: string): boolean => {
     const trimmedName = name.trim();
@@ -141,9 +142,9 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
 
       if (response.ok) {
         window.open('https://t.me/Bot_RazblokBot', '_blank');
-        onOpenChange(false);
         setFormData({ name: '', email: '', phone: '', consent: false });
         setNameError('');
+        setShowSuccess(true);
       } else {
         alert('Ошибка отправки заявки. Попробуйте позже.');
       }
@@ -153,8 +154,38 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
     }
   };
 
+  const handleClose = (value: boolean) => {
+    if (!value) {
+      setShowSuccess(false);
+    }
+    onOpenChange(value);
+  };
+
+  if (showSuccess) {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <div className="flex flex-col items-center text-center py-6 space-y-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+              <Icon name="Check" size={32} className="text-green-600" />
+            </div>
+            <DialogHeader className="space-y-2">
+              <DialogTitle className="text-2xl">Заявка отправлена ✅</DialogTitle>
+              <DialogDescription className="text-base">
+                Спасибо, ваши данные успешно получены. В ближайшее время с Вами свяжется наш менеджер.
+              </DialogDescription>
+            </DialogHeader>
+            <Button onClick={() => handleClose(false)} className="mt-4" size="lg">
+              Закрыть
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Попробовать бесплатно</DialogTitle>
