@@ -166,9 +166,6 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="flex flex-col items-center text-center py-6 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-              <Icon name="Check" size={32} className="text-green-600" />
-            </div>
             <DialogHeader className="space-y-2">
               <DialogTitle className="text-2xl">Заявка отправлена ✅</DialogTitle>
               <DialogDescription className="text-base">
