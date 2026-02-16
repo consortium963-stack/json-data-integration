@@ -169,7 +169,7 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
             <DialogHeader className="space-y-2">
               <DialogTitle className="text-2xl">Заявка отправлена ✅</DialogTitle>
               <DialogDescription className="text-base">
-                Спасибо, ваши данные успешно получены. В ближайшее время с Вами свяжется наш менеджер.
+                Спасибо, ваши данные успешно получены. В ближайшее время с вами свяжется наш менеджер.
               </DialogDescription>
             </DialogHeader>
             <Button onClick={() => handleClose(false)} className="mt-4" size="lg">
