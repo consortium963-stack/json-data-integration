@@ -1,23 +1,30 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 const PrivacyPolicy = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-background py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-6"
-          onClick={() => navigate(-1)}
-        >
-          <Icon name="ArrowLeft" size={18} />
-          <span className="ml-2">Назад</span>
-        </Button>
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="sticky top-0 z-50 bg-card shadow-sm">
+        <div className="container mx-auto px-4 py-3 md:py-5 flex justify-between items-center">
+          <Link to="/" className="text-2xl md:text-3xl font-bold text-primary tracking-tight">РАЗБЛОК</Link>
+          <Button
+            size="sm"
+            className="bg-primary hover:bg-secondary text-white text-xs md:text-base md:px-6 shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
+            asChild
+          >
+            <Link to="/">
+              <Icon name="ArrowLeft" size={16} className="mr-1" />
+              <span className="hidden sm:inline">На главную</span>
+              <span className="sm:hidden">Назад</span>
+            </Link>
+          </Button>
+        </div>
+      </header>
 
-        <article className="prose prose-neutral dark:prose-invert max-w-none">
+      <main className="flex-1 py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          <article className="prose prose-neutral dark:prose-invert max-w-none">
           <h1 className="text-2xl font-bold mb-1">ПОЛИТИКА В ОТНОШЕНИИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ</h1>
           <p className="text-lg font-semibold mb-8">ООО «Бизнес Капитал»</p>
 
@@ -206,7 +213,15 @@ const PrivacyPolicy = () => {
             <p className="mt-4 italic">Используя сайт https://разблок.рф/ и/или взаимодействуя с AI-ассистентом «РАЗБЛОК», вы подтверждаете, что ознакомились с настоящей Политикой и принимаете её условия.</p>
           </div>
         </article>
-      </div>
+        </div>
+      </main>
+
+      <footer className="bg-foreground text-white py-10">
+        <div className="container mx-auto px-4 text-center">
+          <p className="opacity-80">© 2026 РАЗБЛОК. AI-помощник по разблокировке счетов</p>
+          <p className="opacity-70 mt-2 text-sm">От создателя "Заметки Банкира" — Юлии Левицкой</p>
+        </div>
+      </footer>
     </div>
   );
 };
