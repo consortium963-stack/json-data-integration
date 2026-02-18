@@ -240,7 +240,7 @@ export default function TrialModal({ open, onOpenChange }: TrialModalProps) {
               htmlFor="consent"
               className="text-sm leading-tight cursor-pointer"
             >
-              Я согласен на обработку персональных данных в соответствии с Федеральным законом №152-ФЗ «О персональных данных»
+              Я согласен(на) на обработку персональных данных в соответствии с Политикой обработки персональных данных ООО «Бизнес Капитал»
             </Label>
           </div>
           <Button 
