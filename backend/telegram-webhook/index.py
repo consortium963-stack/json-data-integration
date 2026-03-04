@@ -2,6 +2,7 @@ import json
 import os
 import urllib.request
 import urllib.parse
+import psycopg2
 
 
 FAQ = [
@@ -23,16 +24,6 @@ FAQ = [
             "• Рассмотрение банком — обычно 3–10 рабочих дней\n"
             "• Сложные случаи — до 30 дней\n\n"
             "Мы уже помогли разблокировать 210+ счетов в 2025 году. Расскажите вашу ситуацию — оценим точнее."
-        )
-    },
-    {
-        "keywords": ["начать", "начало", "как работает", "что делать", "с чего", "первый шаг", "помогите", "помощь"],
-        "answer": (
-            "🚀 Как начать работу с РАЗБЛОК:\n\n"
-            "1️⃣ Опишите проблему — какой банк, какой код блокировки (115-ФЗ, 161-ФЗ или служба безопасности)\n"
-            "2️⃣ AI-помощник составит пошаговый план и нужные документы за 5 минут\n"
-            "3️⃣ При необходимости подключим юриста\n\n"
-            "Просто напишите нам о своей ситуации прямо сейчас!"
         )
     },
     {
@@ -88,22 +79,51 @@ FAQ = [
     },
 ]
 
-DEFAULT_ANSWER = (
-    "Здравствуйте! Я бот сервиса РАЗБЛОК 👋\n\n"
-    "Помогаем предпринимателям разблокировать банковские счета по 115-ФЗ.\n\n"
-    "Вы можете спросить меня про:\n"
-    "• Стоимость услуг\n"
-    "• Сроки разблокировки\n"
-    "• Как начать / что делать\n"
-    "• Какие документы нужны\n"
-    "• Блокировку по 115-ФЗ\n\n"
-    "Или просто опишите вашу ситуацию — передам её нашим специалистам!"
-)
 
-LEAD_KEYWORDS = ["заблокировали", "заблокирован", "счет", "счёт", "заморозили", "не работает счет", "ограничен"]
+def get_db():
+    return psycopg2.connect(os.environ["DATABASE_URL"])
 
 
-def find_answer(text: str) -> str:
+def get_session(chat_id: int) -> dict:
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT step, name, phone, problem FROM bot_sessions WHERE chat_id = %s", (chat_id,))
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return {"step": row[0], "name": row[1], "phone": row[2], "problem": row[3]}
+    return None
+
+
+def save_session(chat_id: int, step: str, name=None, phone=None, problem=None):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO bot_sessions (chat_id, step, name, phone, problem, updated_at)
+        VALUES (%s, %s, %s, %s, %s, NOW())
+        ON CONFLICT (chat_id) DO UPDATE
+        SET step = EXCLUDED.step,
+            name = EXCLUDED.name,
+            phone = EXCLUDED.phone,
+            problem = EXCLUDED.problem,
+            updated_at = NOW()
+        """,
+        (chat_id, step, name, phone, problem)
+    )
+    conn.commit()
+    conn.close()
+
+
+def delete_session(chat_id: int):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM bot_sessions WHERE chat_id = %s", (chat_id,))
+    conn.commit()
+    conn.close()
+
+
+def find_faq_answer(text: str) -> str:
     text_lower = text.lower()
     for item in FAQ:
         for keyword in item["keywords"]:
@@ -124,27 +144,24 @@ def send_message(bot_token: str, chat_id: int, text: str):
         return json.loads(resp.read().decode())
 
 
-def notify_admin(bot_token: str, admin_chat_id: str, user_text: str, user_info: dict):
-    first = user_info.get("first_name", "")
-    last = user_info.get("last_name", "")
-    username = user_info.get("username", "")
-    user_id = user_info.get("id", "")
-
-    name_str = f"{first} {last}".strip() or "Не указано"
+def notify_admin(bot_token: str, admin_chat_id: str, session: dict, tg_user: dict):
+    username = tg_user.get("username", "")
     username_str = f"@{username}" if username else "нет"
+    tg_id = tg_user.get("id", "")
 
     message = (
-        f"📩 Новое сообщение от пользователя\n\n"
-        f"Имя: {name_str}\n"
-        f"Username: {username_str}\n"
-        f"ID: {user_id}\n\n"
-        f"Сообщение:\n{user_text}"
+        "🔥 Новая заявка с Telegram-бота!\n\n"
+        f"ФИО: {session.get('name', '—')}\n"
+        f"Телефон: {session.get('phone', '—')}\n"
+        f"Проблема: {session.get('problem', '—')}\n\n"
+        f"Telegram: {username_str}\n"
+        f"ID: {tg_id}"
     )
     send_message(bot_token, int(admin_chat_id), message)
 
 
 def handler(event: dict, context) -> dict:
-    """Вебхук для Telegram-бота РАЗБЛОК — отвечает на вопросы пользователей по FAQ"""
+    """Вебхук Telegram-бота РАЗБЛОК — пошаговый сбор заявки и ответы на вопросы"""
 
     if event.get("httpMethod") == "OPTIONS":
         return {
@@ -168,25 +185,84 @@ def handler(event: dict, context) -> dict:
         body = raw_body
     else:
         body = json.loads(raw_body) if raw_body else {}
-    message = body.get("message") or body.get("edited_message")
 
+    message = body.get("message") or body.get("edited_message")
     if not message:
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
 
     chat_id = message["chat"]["id"]
-    user_text = message.get("text", "")
-    user_info = message.get("from", {})
+    text = message.get("text", "").strip()
+    tg_user = message.get("from", {})
 
-    if not user_text:
+    if not text:
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
 
-    answer = find_answer(user_text)
+    session = get_session(chat_id)
 
-    if answer:
-        send_message(bot_token, chat_id, answer)
-    else:
-        send_message(bot_token, chat_id, DEFAULT_ANSWER)
+    # /start или нет активной сессии
+    if text == "/start" or session is None:
+        save_session(chat_id, step="ask_name")
+        send_message(bot_token, chat_id,
+            "Привет! 👋 Я помогу разобраться с блокировкой вашего счёта.\n\n"
+            "Для начала скажите — как вас зовут?"
+        )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+    step = session["step"]
+
+    # Шаг 1 — ждём имя
+    if step == "ask_name":
+        save_session(chat_id, step="ask_phone", name=text)
+        send_message(bot_token, chat_id,
+            f"{text}, приятно познакомиться! 😊\n\n"
+            "Укажите ваш номер телефона, чтобы наш специалист мог с вами связаться:"
+        )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+    # Шаг 2 — ждём телефон
+    if step == "ask_phone":
+        save_session(chat_id, step="ask_problem", name=session["name"], phone=text)
+        send_message(bot_token, chat_id,
+            "Отлично, записал! 📝\n\n"
+            "Теперь кратко опишите ситуацию:\n"
+            "• Какой банк заблокировал счёт?\n"
+            "• Какую причину указали?\n"
+            "• Когда это произошло?"
+        )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+    # Шаг 3 — ждём описание проблемы
+    if step == "ask_problem":
+        updated_session = {"name": session["name"], "phone": session["phone"], "problem": text}
+        delete_session(chat_id)
+
         if admin_chat_id:
-            notify_admin(bot_token, admin_chat_id, user_text, user_info)
+            notify_admin(bot_token, admin_chat_id, updated_session, tg_user)
+
+        send_message(bot_token, chat_id,
+            "Спасибо! Заявка принята ✅\n\n"
+            "Наш специалист свяжется с вами в ближайшее время.\n\n"
+            "Пока ждёте — можете задать любой вопрос:\n"
+            "• Сколько стоит?\n"
+            "• Сколько займёт времени?\n"
+            "• Какие документы нужны?\n"
+            "• Что такое 115-ФЗ?"
+        )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+    # После заявки — отвечаем на FAQ
+    faq_answer = find_faq_answer(text)
+    if faq_answer:
+        send_message(bot_token, chat_id, faq_answer)
+    else:
+        send_message(bot_token, chat_id,
+            "Я не совсем понял вопрос 🤔\n\n"
+            "Вы можете спросить про:\n"
+            "• Стоимость услуг\n"
+            "• Сроки разблокировки\n"
+            "• Документы\n"
+            "• Блокировку по 115-ФЗ\n\n"
+            "Или напишите /start чтобы оставить новую заявку."
+        )
 
     return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
