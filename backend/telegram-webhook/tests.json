@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Unknown update (no message)",
+      "method": "POST",
+      "path": "/",
+      "body": {"update_id": 123},
+      "expectedStatus": 200
+    }
+  ]
+}
