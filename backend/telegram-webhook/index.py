@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import urllib.request
 import urllib.parse
 import psycopg2
@@ -132,36 +133,62 @@ def find_faq_answer(text: str) -> str:
     return None
 
 
-def send_message(bot_token: str, chat_id: int, text: str):
+def send_message(bot_token: str, chat_id: int, text: str, reply_markup=None):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    data = urllib.parse.urlencode({
+    payload = {
         "chat_id": chat_id,
         "text": text,
         "parse_mode": "HTML"
-    }).encode()
+    }
+    if reply_markup:
+        payload["reply_markup"] = json.dumps(reply_markup)
+    data = urllib.parse.urlencode(payload).encode()
     req = urllib.request.Request(url, data=data, method="POST")
     with urllib.request.urlopen(req, timeout=10) as resp:
         return json.loads(resp.read().decode())
 
 
-def notify_admin(bot_token: str, admin_chat_id: str, session: dict, tg_user: dict):
+def notify_admin(bot_token: str, admin_chat_id: str, name: str, phone: str, email: str, tg_user: dict):
     username = tg_user.get("username", "")
     username_str = f"@{username}" if username else "нет"
     tg_id = tg_user.get("id", "")
 
     message = (
         "🔥 Новая заявка с Telegram-бота!\n\n"
-        f"ФИО: {session.get('name', '—')}\n"
-        f"Телефон: {session.get('phone', '—')}\n"
-        f"Проблема: {session.get('problem', '—')}\n\n"
+        f"ФИО: {name}\n"
+        f"Телефон: {phone}\n"
+        f"Email: {email}\n\n"
         f"Telegram: {username_str}\n"
         f"ID: {tg_id}"
     )
     send_message(bot_token, int(admin_chat_id), message)
 
 
+def is_valid_phone(text: str) -> bool:
+    digits = re.sub(r"[\s\-\(\)\+]", "", text)
+    if digits.startswith("8"):
+        digits = "7" + digits[1:]
+    return bool(re.fullmatch(r"7\d{10}", digits)) and len(digits) == 11
+
+
+def normalize_phone(text: str) -> str:
+    digits = re.sub(r"[\s\-\(\)\+]", "", text)
+    if digits.startswith("8"):
+        digits = "7" + digits[1:]
+    return "+" + digits
+
+
+def is_valid_fio(text: str) -> bool:
+    parts = text.strip().split()
+    return len(parts) >= 2 and all(re.fullmatch(r"[А-Яа-яЁёA-Za-z\-]+", p) for p in parts)
+
+
+def is_valid_email(text: str) -> bool:
+    return bool(re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", text.strip()))
+
+
 def handler(event: dict, context) -> dict:
-    """Вебхук Telegram-бота РАЗБЛОК — пошаговый сбор заявки и ответы на вопросы"""
+    """Вебхук Telegram-бота РАЗБЛОК — согласие с политикой, сбор ФИО/телефон/email, ответы на вопросы"""
 
     if event.get("httpMethod") == "OPTIONS":
         return {
@@ -186,6 +213,28 @@ def handler(event: dict, context) -> dict:
     else:
         body = json.loads(raw_body) if raw_body else {}
 
+    # Обработка нажатия inline-кнопки (callback_query)
+    callback = body.get("callback_query")
+    if callback:
+        cb_chat_id = callback["message"]["chat"]["id"]
+        cb_data = callback.get("data", "")
+        cb_user = callback.get("from", {})
+        cb_id = callback["id"]
+
+        # Подтверждаем нажатие кнопки
+        ack_url = f"https://api.telegram.org/bot{bot_token}/answerCallbackQuery"
+        ack_data = urllib.parse.urlencode({"callback_query_id": cb_id}).encode()
+        urllib.request.urlopen(urllib.request.Request(ack_url, data=ack_data, method="POST"), timeout=10)
+
+        if cb_data == "agree":
+            save_session(cb_chat_id, step="ask_fio")
+            send_message(bot_token, cb_chat_id,
+                "Спасибо! ✅\n\n"
+                "Пожалуйста, введите ваше <b>ФИО</b> полностью\n"
+                "(например: Иванов Иван Иванович)"
+            )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
     message = body.get("message") or body.get("edited_message")
     if not message:
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
@@ -199,48 +248,88 @@ def handler(event: dict, context) -> dict:
 
     session = get_session(chat_id)
 
-    # /start или нет активной сессии
+    # /start — всегда сбрасываем и показываем приветствие с кнопкой
     if text == "/start" or session is None:
-        save_session(chat_id, step="ask_name")
-        send_message(bot_token, chat_id,
+        save_session(chat_id, step="wait_agree")
+        send_message(
+            bot_token, chat_id,
             "Привет! 👋 Я помогу разобраться с блокировкой вашего счёта.\n\n"
-            "Для начала скажите — как вас зовут?"
+            "Для начала ознакомьтесь с <a href=\"https://razblok.ru/privacy\">политикой обработки персональных данных</a> "
+            "и нажмите кнопку ниже, чтобы продолжить.",
+            reply_markup={
+                "inline_keyboard": [[
+                    {"text": "✅ Согласен с политикой", "callback_data": "agree"}
+                ]]
+            }
         )
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
 
     step = session["step"]
 
-    # Шаг 1 — ждём имя
-    if step == "ask_name":
+    # Пока не нажата кнопка — напоминаем
+    if step == "wait_agree":
+        send_message(
+            bot_token, chat_id,
+            "Пожалуйста, сначала нажмите кнопку <b>«Согласен с политикой»</b> выше 👆",
+        )
+        return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+    # Шаг 1 — ФИО
+    if step == "ask_fio":
+        if not is_valid_fio(text):
+            send_message(bot_token, chat_id,
+                "⚠️ Пожалуйста, введите полное ФИО — минимум имя и фамилию, только буквы.\n\n"
+                "Например: <b>Иванов Иван Иванович</b>"
+            )
+            return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
         save_session(chat_id, step="ask_phone", name=text)
         send_message(bot_token, chat_id,
-            f"{text}, приятно познакомиться! 😊\n\n"
-            "Укажите ваш номер телефона, чтобы наш специалист мог с вами связаться:"
+            f"Отлично, {text.split()[0]}! 😊\n\n"
+            "Введите ваш <b>номер телефона</b> (11 цифр):\n"
+            "Например: <b>89001234567</b> или <b>+79001234567</b>"
         )
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
 
-    # Шаг 2 — ждём телефон
+    # Шаг 2 — Телефон
     if step == "ask_phone":
-        save_session(chat_id, step="ask_problem", name=session["name"], phone=text)
+        if not is_valid_phone(text):
+            send_message(bot_token, chat_id,
+                "⚠️ Номер телефона должен содержать <b>11 цифр</b>.\n\n"
+                "Например: <b>89001234567</b> или <b>+79001234567</b>"
+            )
+            return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+        phone = normalize_phone(text)
+        save_session(chat_id, step="ask_email", name=session["name"], phone=phone)
         send_message(bot_token, chat_id,
-            "Отлично, записал! 📝\n\n"
-            "Теперь кратко опишите ситуацию:\n"
-            "• Какой банк заблокировал счёт?\n"
-            "• Какую причину указали?\n"
-            "• Когда это произошло?"
+            "Записал! 📝\n\n"
+            "Теперь введите вашу <b>электронную почту</b>:\n"
+            "Например: <b>ivan@mail.ru</b>"
         )
         return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
 
-    # Шаг 3 — ждём описание проблемы
-    if step == "ask_problem":
-        updated_session = {"name": session["name"], "phone": session["phone"], "problem": text}
+    # Шаг 3 — Email
+    if step == "ask_email":
+        if not is_valid_email(text):
+            send_message(bot_token, chat_id,
+                "⚠️ Некорректный адрес почты. Попробуйте ещё раз.\n\n"
+                "Например: <b>ivan@mail.ru</b>"
+            )
+            return {"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "ok"}
+
+        name = session["name"]
+        phone = session["phone"]
+        email = text.strip().lower()
+
         delete_session(chat_id)
 
         if admin_chat_id:
-            notify_admin(bot_token, admin_chat_id, updated_session, tg_user)
+            notify_admin(bot_token, admin_chat_id, name, phone, email, tg_user)
 
         send_message(bot_token, chat_id,
             "Спасибо! Заявка принята ✅\n\n"
+            f"<b>ФИО:</b> {name}\n"
+            f"<b>Телефон:</b> {phone}\n"
+            f"<b>Email:</b> {email}\n\n"
             "Наш специалист свяжется с вами в ближайшее время.\n\n"
             "Пока ждёте — можете задать любой вопрос:\n"
             "• Сколько стоит?\n"
