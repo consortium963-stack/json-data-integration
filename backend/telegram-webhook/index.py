@@ -327,9 +327,6 @@ def handler(event: dict, context) -> dict:
 
         send_message(bot_token, chat_id,
             "Спасибо! Заявка принята ✅\n\n"
-            f"<b>ФИО:</b> {name}\n"
-            f"<b>Телефон:</b> {phone}\n"
-            f"<b>Email:</b> {email}\n\n"
             "Наш специалист свяжется с вами в ближайшее время.\n\n"
             "Пока ждёте — можете задать любой вопрос:\n"
             "• Сколько стоит?\n"
